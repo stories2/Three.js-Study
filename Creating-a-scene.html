@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+            // Our Javascript will go here.
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            // 시야각 FOV
+            // 랜더링 비율
+            // 랜더링 시작 거리
+            // 랜더링 끝 거리
+
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            // 렌더러 사이즈는 브라우저 전체
+            document.body.appendChild( renderer.domElement );
+            // 렌더러를 브라우저에 적용
+
+            var geometry = new THREE.BoxGeometry();
+            // Box 모양
+            var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            // 머테리얼인데 색깔이 0x00ff00 인
+            var cube = new THREE.Mesh( geometry, material );
+            // 큐브 Mesh 생성을 Box 모양과 0x00ff00 색깔의 머테리얼 조합으로
+            scene.add( cube );
+            // Scene 에 추가
+
+            camera.position.z = 5;
+            // 카메라 z 위치 변경
+
+            function animate() {
+                requestAnimationFrame( animate );
+                // 매 60프레임으로 렌더링
+                cube.rotation.x += 0.01;
+                cube.rotation.y += 0.01;
+                // 큐브의 x, y 회전
+                renderer.render( scene, camera );
+                // 렌더러가 Scene 하고 카메라 렌더링
+            }
+            animate();
+		</script>
+	</body>
+</html>
