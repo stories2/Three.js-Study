@@ -42,29 +42,21 @@
                 geometry = new THREE.BufferGeometry().fromGeometry(geometry);
 
                 var material = new THREE.MeshBasicMaterial({
-                    color: 0x00ff00
+                    color: 0x00ff00,
+                    side: THREE.DoubleSide
                 })
                 var mesh = new THREE.Mesh(geometry, material);
                 mesh.position.x = centerOffset;
                 mesh.position.y = 0;
                 mesh.position.z = 0;
 
-                mesh.rotation.x = 0;
+                mesh.rotation.x = Math.PI;
                 mesh.rotation.y = 0;
 
                 console.log(`pos: ${JSON.stringify(mesh.position)}`)
 
                 scene.add(mesh);
-
-                function animate() {
-                    requestAnimationFrame( animate );
-                    // 매 60프레임으로 렌더링
-                    mesh.rotation.x += 0.01;
-                    // 큐브의 x, y 회전
-                    renderer.render( scene, camera );
-                    // 렌더러가 Scene 하고 카메라 렌더링
-                }
-                animate();
+                renderer.render( scene, camera );
             })
 		</script>
 	</body>
