@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+            // Our Javascript will go here.
+            var scene = new THREE.Scene();
+
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            // var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+            var camera = new THREE.OrthographicCamera(window.innerWidth / -2, window.innerWidth / 2,
+                                                        window.innerHeight / -2, window.innerHeight / 2,
+                                                        -100, 100);
+            camera.position.set(0, 0, 100);
+            camera.lookAt(0, 0, 0);
+            // 카메라는 z 축이 100 인 지점에서 0, 0, 0 좌표 방향으로 보고 있음,
+            // 간단히 100층 높이 아파트에서 지면을 향해 수직으로 보고 있다고 보면 됨
+
+            var loader = new THREE.FontLoader();
+            loader.load('js/helvetiker_regular.typeface.js', (font) => {
+
+                var geometry = new THREE.TextGeometry('HELLO WORLD', {
+                    size: 40,
+                    font: font
+                });
+                geometry.computeBoundingBox();
+                geometry.computeVertexNormals();
+
+
+                var centerOffset = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                geometry = new THREE.BufferGeometry().fromGeometry(geometry);
+
+                var material = new THREE.MeshBasicMaterial({
+                    color: 0x00ff00
+                })
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.position.x = centerOffset;
+                mesh.position.y = 0;
+                mesh.position.z = 0;
+
+                mesh.rotation.x = 0;
+                mesh.rotation.y = 0;
+
+                console.log(`pos: ${JSON.stringify(mesh.position)}`)
+
+                scene.add(mesh);
+
+                function animate() {
+                    requestAnimationFrame( animate );
+                    // 매 60프레임으로 렌더링
+                    mesh.rotation.x += 0.01;
+                    // 큐브의 x, y 회전
+                    renderer.render( scene, camera );
+                    // 렌더러가 Scene 하고 카메라 렌더링
+                }
+                animate();
+            })
+		</script>
+	</body>
+</html>
