@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+            const SCREEN_WIDTH = window.innerWidth;
+            const SCREEN_HEIGHT = window.innerHeight;
+            const ASPECT_RATIO = SCREEN_WIDTH / SCREEN_HEIGHT;
+
+            const VIEW_LEFT = [
+                0, 0, SCREEN_WIDTH / 2 - 1, SCREEN_HEIGHT
+            ];
+            const VIEW_RIGHT = [
+                SCREEN_WIDTH / 2, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT
+            ]
+            console.log(`left ${VIEW_LEFT} right ${VIEW_RIGHT}`);
+
+            console.log(`width: ${SCREEN_WIDTH}, height: ${SCREEN_HEIGHT}, ratio: ${ASPECT_RATIO}`);
+            // Our Javascript will go here.
+            var scene = new THREE.Scene();
+
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            renderer.autoClear = false;
+            // 프레임을 그리기전에 자동으로 초기화 하기때문에 비활성화
+
+            var child = document.body.appendChild(renderer.domElement);
+
+            var camera = new THREE.PerspectiveCamera(50, ASPECT_RATIO * 0.5, 1, 10000);
+            camera.position.z = 2500;
+
+            var cameraPerspective = new THREE.PerspectiveCamera(50, 0.5 * ASPECT_RATIO, 150, 1000);
+            var cameraPerspectiveHelper = new THREE.CameraHelper(cameraPerspective);
+            scene.add(cameraPerspectiveHelper);
+            scene.add(cameraPerspective);
+
+            var mesh = new THREE.Mesh(
+                new THREE.SphereBufferGeometry(100, 16, 8),
+                new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    wireframe: true
+                })
+            );
+            scene.add(mesh);
+
+            
+            function animate() {
+                requestAnimationFrame( animate );
+                var r = Date.now() * 0.0005;
+                mesh.position.x = 700 * Math.cos(r);
+                mesh.position.y = 700 * Math.sin(r);
+                mesh.position.z = 700 * Math.sin(r);
+
+                cameraPerspective.lookAt(mesh.position);
+
+                renderer.clear();
+
+                cameraPerspectiveHelper.visible = false;
+                cameraPerspective.updateProjectionMatrix();
+                renderer.setViewport(VIEW_LEFT[0], VIEW_LEFT[1], VIEW_LEFT[2], VIEW_LEFT[3]);
+                renderer.render(scene, cameraPerspective);
+
+                cameraPerspectiveHelper.visible = true;
+                renderer.setViewport(VIEW_RIGHT[0], VIEW_RIGHT[1], VIEW_RIGHT[2], VIEW_RIGHT[3]);
+                renderer.render(scene, camera);
+            }
+            animate();
+		</script>
+	</body>
+</html>
