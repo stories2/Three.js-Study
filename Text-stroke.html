@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+        <script src="js/three.js"></script>
+        <!-- <script src="js/OrbitControls.js"></script> -->
+		<script type="module">
+
+            import { OrbitControls } from './js/OrbitControls.js';
+            // Our Javascript will go here.
+            var scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f0f0);
+
+            var renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(0, -400, 600);
+           
+            var loader = new THREE.FontLoader();
+            loader.load('./js/helvetiker_regular.typeface.json', (font) => {
+
+                console.log('font', font);
+                var xCenter, text;
+                var color = 0x006699;
+
+                var matDark = new THREE.LineBasicMaterial({
+                    color: color,
+                    side: THREE.DoubleSide
+                });
+
+                var matLite = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.4,
+                    side: THREE.DoubleSide
+                });
+
+                var message = "   Three.js\nSimple text.";
+
+                var shapes = font.generateShapes(message, 100);
+                var geometry = new THREE.ShapeBufferGeometry(shapes);
+
+                geometry.computeBoundingBox();
+
+                xCenter = -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+                console.log('xCenter', xCenter);
+
+                geometry.translate(xCenter, 0, 0);
+
+                text = new THREE.Mesh(geometry, matLite);
+                text.position.z = -150;
+                
+                scene.add(text);
+                // 일반 텍스트 출력
+
+                var holeShapes = [];
+
+                console.log('shapes', shapes);
+                for (var i = 0; i < shapes.length; i ++) {
+                    var shape = shapes[i];
+                    if (shape.holes && shape.holes.length > 0) {
+                        for (var j = 0; j < shape.holes.length; j++) {
+                            var hole = shape.holes[j];
+                            holeShapes.push(hole);
+                        }
+                    }
+                }
+                console.log('holeShapes', holeShapes);
+                shapes.push.apply(shapes, holeShapes);
+
+                var lineText = new THREE.Object3D();
+
+                for (var i = 0; i < shapes.length; i++ ){
+                    var shape = shapes[i];
+                    var points = shape.getPoints();
+                    console.log(`${i} points: `, points, shape)
+                    var geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    geometry.translate(xCenter, 0, 0);
+
+                    var lineMesh = new THREE.Line(geometry, matDark);
+                    lineText.add(lineMesh);
+                }
+
+                scene.add(lineText);
+                // stroke 텍스트
+                // 정확히는 모르겠지만 로드된 폰트의 각 글자 마다 렌더링 Path 가 있으며 그 포인트들을 이용해
+                // line 메쉬로 생성하며 그 매쉬들을 3d 오브젝트에 더한 결과물을 scene 에 추가 함
+
+                console.log('hello?')
+
+            })
+
+            var controls = new OrbitControls(camera, renderer.domElement);
+            controls.target.set(0, 0, 0);
+            controls.update();
+                
+
+            function animate() {
+
+                requestAnimationFrame( animate );
+                renderer.render(scene, camera);
+
+            }
+            animate();
+		</script>
+	</body>
+</html>
